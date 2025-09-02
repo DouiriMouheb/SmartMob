@@ -1,0 +1,47 @@
+@api_HostAddress = https://localhost:7052
+
+# Get all database records
+GET {{api_HostAddress}}/api/DatabaseRecords
+Accept: application/json
+
+###
+
+# Get record by ID
+GET {{api_HostAddress}}/api/DatabaseRecords/1
+Accept: application/json
+
+###
+
+# Create new record
+POST {{api_HostAddress}}/api/DatabaseRecords
+Content-Type: application/json
+
+{
+  "descrizione": "Test Description",
+  "valore": "Test Value"
+}
+
+###
+
+# Update record by ID
+PUT {{api_HostAddress}}/api/DatabaseRecords/1
+Content-Type: application/json
+
+{
+  "descrizione": "Updated Description",
+  "valore": "Updated Value"
+}
+
+###
+
+# Search records
+GET {{api_HostAddress}}/api/DatabaseRecords/search?term=test
+Accept: application/json
+
+###
+
+# Delete record by ID
+DELETE {{api_HostAddress}}/api/DatabaseRecords/1
+Accept: application/json
+
+###
