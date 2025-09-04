@@ -10,13 +10,20 @@ This project is a .NET 9.0 Web API with Entity Framework Core that provides CRUD
    cd api
    ```
 
-2. **Configure database connection:**
-   ```bash
-   # Copy the environment template
-   copy .env.example .env
-   
-   # Edit .env file with your remote database connection string
-   # CONNECTION_STRING=Server=your-remote-server.com,1433;Database=SmartMob;User Id=your-username;Password=your-password;TrustServerCertificate=True;Encrypt=True;
+2. **Create appsettings.json with your database connection:**
+   ```json
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Data Source=your-server-ip;Initial Catalog=SMARTMOB;User Id=sa;Password=your-password;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+     },
+     "Logging": {
+       "LogLevel": {
+         "Default": "Information",
+         "Microsoft.AspNetCore": "Warning"
+       }
+     },
+     "AllowedHosts": "*"
+   }
    ```
 
 3. **Start the application:**
@@ -32,7 +39,7 @@ This project is a .NET 9.0 Web API with Entity Framework Core that provides CRUD
 
 The Docker setup creates:
 - **API container** (port 5000) with your .NET application
-- **Connection to your remote database** (no local database container)
+- **Uses your appsettings.json** for database connection (no environment variables needed)
 
 ## Database Setup
 
@@ -66,26 +73,20 @@ Since you're using a remote database, ensure that:
 
 ## Docker Configuration
 
-### Environment Variables
-Set these in your `.env` file:
-- **CONNECTION_STRING**: Full connection string to your remote database
+### Simple Configuration
+- **Just create appsettings.json** with your connection string
+- **No environment variables needed** - Docker uses the appsettings.json file directly
 - **API Port:** 5000 (mapped from container's 8080)
 
-### Remote Database Connection Examples
+### Connection String Format
+Update the `DefaultConnection` in your `appsettings.json`:
 
-**Azure SQL Database:**
-```
-CONNECTION_STRING=Server=tcp:your-server.database.windows.net,1433;Initial Catalog=SmartMob;User ID=your-username;Password=your-password;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
-```
-
-**Remote SQL Server:**
-```
-CONNECTION_STRING=Server=your-remote-server.com,1433;Database=SmartMob;User Id=your-username;Password=your-password;TrustServerCertificate=True;Encrypt=True;
-```
-
-**Local SQL Server (from container to host):**
-```
-CONNECTION_STRING=Server=host.docker.internal\\SQLEXPRESS;Database=SmartMob;Integrated Security=true;TrustServerCertificate=True;
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=YOUR_SERVER_IP;Initial Catalog=SMARTMOB;User Id=sa;Password=YOUR_PASSWORD;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+  }
+}
 ```
 
 ## Development
@@ -118,7 +119,7 @@ docker-compose up --build
 ### Database Connection
 - Ensure your remote database is accessible from the container
 - Check firewall rules and network connectivity
-- Verify connection string format in .env file
+- Verify connection string format in appsettings.json
 - Test connection from your local machine first
 
 ### Port Conflicts
