@@ -1,5 +1,60 @@
 @api_HostAddress = https://localhost:7052
 
+# ====== ARTICOLI CONTROLLO QUALITA ENDPOINTS ======
+
+# Get all articoli
+GET {{api_HostAddress}}/api/Articoli
+Accept: application/json
+
+###
+
+# Get articolo by code
+GET {{api_HostAddress}}/api/Articoli/ART001
+Accept: application/json
+
+###
+
+# Create new articolo
+POST {{api_HostAddress}}/api/Articoli
+Content-Type: application/json
+
+{
+  "codArticolo": "ART005",
+  "codLineaProd": "M001"
+}
+
+###
+
+# Update articolo
+PUT {{api_HostAddress}}/api/Articoli/ART005
+Content-Type: application/json
+
+{
+  "codLineaProd": "M002"
+}
+
+###
+
+# Delete articolo
+DELETE {{api_HostAddress}}/api/Articoli/ART005
+Accept: application/json
+
+###
+
+# Search articoli
+GET {{api_HostAddress}}/api/Articoli/search?term=ART001
+Accept: application/json
+
+###
+
+# Get articoli by linea produzione
+GET {{api_HostAddress}}/api/Articoli/by-linea/M001
+Accept: application/json
+
+###
+
+# ====== DATABASE RECORDS ENDPOINTS ======
+
 # Get all database records
 GET {{api_HostAddress}}/api/DatabaseRecords
 Accept: application/json
@@ -12,36 +67,130 @@ Accept: application/json
 
 ###
 
-# Create new record
+# Create new record (with all fields)
 POST {{api_HostAddress}}/api/DatabaseRecords
 Content-Type: application/json
 
 {
   "descrizione": "Test Description",
-  "valore": "Test Value"
+  "valore": "Test Value",
+  "codLineaProd": "M001",
+  "tipologia": 1
 }
 
 ###
 
-# Update record by ID
+# Update record by ID (only valore)
 PUT {{api_HostAddress}}/api/DatabaseRecords/1
 Content-Type: application/json
 
 {
-  "descrizione": "Updated Description",
-  "valore": "Updated Value"
+  "valore": "Updated Value Only"
 }
 
 ###
 
-# Search records
-GET {{api_HostAddress}}/api/DatabaseRecords/search?term=test
-Accept: application/json
+# Update record completely (all fields)
+PUT {{api_HostAddress}}/api/DatabaseRecords/1/full
+Content-Type: application/json
+
+{
+  "descrizione": "Fully Updated Description",
+  "valore": "Fully Updated Value",
+  "codLineaProd": "M002",
+  "tipologia": 2
+}
 
 ###
 
 # Delete record by ID
 DELETE {{api_HostAddress}}/api/DatabaseRecords/1
+Accept: application/json
+
+###
+
+# Search records
+GET {{api_HostAddress}}/api/DatabaseRecords/search?term=foto
+Accept: application/json
+
+###
+
+# Get records by tipologia
+GET {{api_HostAddress}}/api/DatabaseRecords/by-tipologia/1
+Accept: application/json
+
+###
+
+# Get records by linea produzione
+GET {{api_HostAddress}}/api/DatabaseRecords/by-linea/M001
+Accept: application/json
+
+###
+
+# ====== TIPOLOGIE ENDPOINTS (Read-only) ======
+
+# Get all tipologie
+GET {{api_HostAddress}}/api/Tipologie
+Accept: application/json
+
+###
+
+# Get tipologia by ID
+GET {{api_HostAddress}}/api/Tipologie/1
+Accept: application/json
+
+###
+
+# ====== CONTROLLO QUALITA ENDPOINTS (Simple Structure) ======
+
+# Get all articoli - Returns array directly
+GET {{api_HostAddress}}/api/ControlloQualita
+Accept: application/json
+
+###
+
+# Get articolo by ID - Returns object directly
+GET {{api_HostAddress}}/api/ControlloQualita/1
+Accept: application/json
+
+###
+
+# Get articolo by COD_ARTICOLO - Returns object directly
+GET {{api_HostAddress}}/api/ControlloQualita/by-code/ART001
+Accept: application/json
+
+###
+
+# Create new articolo - Returns created object
+POST {{api_HostAddress}}/api/ControlloQualita
+Content-Type: application/json
+
+{
+  "codArticolo": "ART001",
+  "codLineaProd": "M001"
+}
+
+###
+
+# Update articolo by ID - Returns updated object
+PUT {{api_HostAddress}}/api/ControlloQualita/1
+Content-Type: application/json
+
+{
+  "codArticolo": "ART001_UPDATED",
+  "codLineaProd": "M002"
+}
+
+###
+
+# Delete articolo by ID - Returns 204 No Content
+DELETE {{api_HostAddress}}/api/ControlloQualita/1
+Accept: application/json
+
+###
+
+# Get articoli by linea produzione - Returns array directly
+GET {{api_HostAddress}}/api/ControlloQualita/by-linea/M001
 Accept: application/json
 
 ###

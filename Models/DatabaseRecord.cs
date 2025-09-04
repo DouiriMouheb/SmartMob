@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace api.Models
 {
-    [Table("TCFG_PARAMETRI_GENERALI")] // You'll need to replace this with your actual table name
+    [Table("TCFG_PARAMETRI_GENERALI")]
     public class DatabaseRecord
     {
         [Key]
@@ -20,5 +20,12 @@ namespace api.Models
         
         [Column("DT_AGG")]
         public DateTime DT_AGG { get; set; }
+        
+        [Column("COD_LINEA_PROD")]
+        [MaxLength(10)]
+        public string? COD_LINEA_PROD { get; set; }
+        
+        [Column("TIPOLOGIA")]
+        public int? TIPOLOGIA { get; set; }
     }
 }

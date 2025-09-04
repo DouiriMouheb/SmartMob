@@ -12,9 +12,21 @@ namespace api.DTOs
         [Required]
         [MaxLength(1000)]
         public string Valore { get; set; } = string.Empty;
+
+        [MaxLength(10)]
+        public string? CodLineaProd { get; set; }
+
+        public int? Tipologia { get; set; }
     }
 
     public class UpdateRecordDto
+    {
+        [Required]
+        [MaxLength(1000)]
+        public string Valore { get; set; } = string.Empty;
+    }
+
+    public class UpdateFullRecordDto
     {
         [Required]
         [MaxLength(500)]
@@ -23,6 +35,11 @@ namespace api.DTOs
         [Required]
         [MaxLength(1000)]
         public string Valore { get; set; } = string.Empty;
+
+        [MaxLength(10)]
+        public string? CodLineaProd { get; set; }
+
+        public int? Tipologia { get; set; }
     }
 
     public class RecordResponseDto
@@ -32,5 +49,14 @@ namespace api.DTOs
         public string Value { get; set; } = string.Empty;
         public DateTime DateAdded { get; set; }
         public string FormattedDate { get; set; } = string.Empty;
+        public string? CodLineaProd { get; set; }
+        public int? Tipologia { get; set; }
+    }
+
+    // DTOs for TipologiaSignificato (Read-only)
+    public class TipologiaResponseDto
+    {
+        public int IdTipologia { get; set; }
+        public string DesSignificato { get; set; } = string.Empty;
     }
 }

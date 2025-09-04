@@ -15,5 +15,7 @@ namespace api.Data
 
         }
         public DbSet<DatabaseRecord> DatabaseRecords { get; set; }
+        public DbSet<TipologiaSignificato> TipologieSignificati { get; set; }
+        public DbSet<ArticoloControlloQualita> ArticoliControlloQualita { get; set; }
     }
 }
