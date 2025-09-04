@@ -3,6 +3,10 @@ bin/
 obj/
 out/
 
+# Environment files
+.env
+.env.*
+
 # Visual Studio
 .vs/
 *.user
