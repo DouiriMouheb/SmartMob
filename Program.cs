@@ -12,17 +12,29 @@ builder.Services.AddSwaggerGen();
 // Add Controllers
 builder.Services.AddControllers();
 
-// Add CORS for React frontend
+// Add CORS for React frontend and external access
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+    
+    // More restrictive policy for production (optional)
+    options.AddPolicy("AllowSpecific", policy =>
     {
         policy.SetIsOriginAllowed(origin => 
             {
                 // Allow any localhost origin for development
                 if (Uri.TryCreate(origin, UriKind.Absolute, out var uri))
                 {
-                    return uri.Host == "localhost";
+                    return uri.Host == "localhost" || 
+                           uri.Host == "127.0.0.1" ||
+                           uri.Host.StartsWith("192.168.") ||
+                           uri.Host.StartsWith("10.") ||
+                           uri.Host.StartsWith("172.");
                 }
                 return false;
             })
@@ -47,8 +59,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Use CORS
-app.UseCors("AllowReactApp");
+// Use CORS - Allow all origins for simplicity
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 
