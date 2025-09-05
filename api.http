@@ -1,21 +1,27 @@
-@api_HostAddress = https://localhost:7052
+@api_HostAddress = http://localhost:5000
 
 # ====== ARTICOLI CONTROLLO QUALITA ENDPOINTS ======
 
 # Get all articoli
-GET {{api_HostAddress}}/api/Articoli
+GET {{api_HostAddress}}/api/ControlloQualita
 Accept: application/json
 
 ###
 
-# Get articolo by code
-GET {{api_HostAddress}}/api/Articoli/ART001
+# Get articolo by code (single)
+GET {{api_HostAddress}}/api/ControlloQualita/single/ART001
+Accept: application/json
+
+###
+
+# Get articolo by composite key (codArticolo + codLineaProd)
+GET {{api_HostAddress}}/api/ControlloQualita/ART001/M001
 Accept: application/json
 
 ###
 
 # Create new articolo
-POST {{api_HostAddress}}/api/Articoli
+POST {{api_HostAddress}}/api/ControlloQualita
 Content-Type: application/json
 
 {
@@ -25,8 +31,19 @@ Content-Type: application/json
 
 ###
 
-# Update articolo
-PUT {{api_HostAddress}}/api/Articoli/ART005
+# Update articolo by single code
+PUT {{api_HostAddress}}/api/ControlloQualita/single/ART005
+Content-Type: application/json
+
+{
+  "codArticolo": "ART005_UPDATED",
+  "codLineaProd": "M002"
+}
+
+###
+
+# Update articolo by composite key
+PUT {{api_HostAddress}}/api/ControlloQualita/ART001/M001
 Content-Type: application/json
 
 {
@@ -149,14 +166,8 @@ Accept: application/json
 
 ###
 
-# Get articolo by ID - Returns object directly
-GET {{api_HostAddress}}/api/ControlloQualita/1
-Accept: application/json
-
-###
-
 # Get articolo by COD_ARTICOLO - Returns object directly
-GET {{api_HostAddress}}/api/ControlloQualita/by-code/ART001
+GET {{api_HostAddress}}/api/ControlloQualita/ART001
 Accept: application/json
 
 ###
@@ -166,14 +177,14 @@ POST {{api_HostAddress}}/api/ControlloQualita
 Content-Type: application/json
 
 {
-  "codArticolo": "ART001",
+  "codArticolo": "ART005",
   "codLineaProd": "M001"
 }
 
 ###
 
-# Update articolo by ID - Returns updated object
-PUT {{api_HostAddress}}/api/ControlloQualita/1
+# Update articolo by COD_ARTICOLO - Returns updated object
+PUT {{api_HostAddress}}/api/ControlloQualita/ART001
 Content-Type: application/json
 
 {
@@ -183,8 +194,8 @@ Content-Type: application/json
 
 ###
 
-# Delete articolo by ID - Returns 204 No Content
-DELETE {{api_HostAddress}}/api/ControlloQualita/1
+# Delete articolo by COD_ARTICOLO - Returns 204 No Content
+DELETE {{api_HostAddress}}/api/ControlloQualita/ART001_UPDATED
 Accept: application/json
 
 ###

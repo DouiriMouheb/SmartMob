@@ -49,7 +49,7 @@ namespace api.Controllers
             }
         }
 
-        // GET: api/ControlloQualita/5
+        // GET: api/ControlloQualita/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<ArticoloResponseDto>> GetById(int id)
         {
@@ -57,43 +57,6 @@ namespace api.Controllers
             {
                 var articolo = await _context.ArticoliControlloQualita
                     .Where(a => a.Id == id)
-                    .Select(a => new ArticoloResponseDto
-                    {
-                        Id = a.Id,
-                        CodArticolo = a.CodArticolo,
-                        DtIns = a.DtIns,
-                        DtAgg = a.DtAgg,
-                        FormattedDtIns = a.DtIns.ToString("yyyy-MM-dd HH:mm:ss"),
-                        FormattedDtAgg = a.DtAgg.ToString("yyyy-MM-dd HH:mm:ss"),
-                        CodLineaProd = a.CodLineaProd
-                    })
-                    .FirstOrDefaultAsync();
-
-                if (articolo == null)
-                {
-                    return NotFound();
-                }
-
-                return Ok(articolo);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { 
-                    success = false, 
-                    message = "Error retrieving articolo", 
-                    error = ex.Message 
-                });
-            }
-        }
-
-        // GET: api/ControlloQualita/by-code/{codArticolo}
-        [HttpGet("by-code/{codArticolo}")]
-        public async Task<ActionResult<ArticoloResponseDto>> GetByCodArticolo(string codArticolo)
-        {
-            try
-            {
-                var articolo = await _context.ArticoliControlloQualita
-                    .Where(a => a.CodArticolo == codArticolo)
                     .Select(a => new ArticoloResponseDto
                     {
                         Id = a.Id,
@@ -138,15 +101,15 @@ namespace api.Controllers
                     });
                 }
 
-                // Check if COD_ARTICOLO already exists
+                // Check if the combination of COD_ARTICOLO + COD_LINEA_PROD already exists
                 var existingArticolo = await _context.ArticoliControlloQualita
-                    .FirstOrDefaultAsync(a => a.CodArticolo == createDto.CodArticolo);
+                    .FirstOrDefaultAsync(a => a.CodArticolo == createDto.CodArticolo && a.CodLineaProd == createDto.CodLineaProd);
                 
                 if (existingArticolo != null)
                 {
                     return BadRequest(new { 
                         success = false, 
-                        message = $"Articolo with code {createDto.CodArticolo} already exists" 
+                        message = $"The combination of Articolo '{createDto.CodArticolo}' and Production Line '{createDto.CodLineaProd}' already exists" 
                     });
                 }
 
@@ -155,7 +118,7 @@ namespace api.Controllers
                     CodArticolo = createDto.CodArticolo,
                     DtIns = DateTime.Now,
                     DtAgg = DateTime.Now,
-                    CodLineaProd = createDto.CodLineaProd
+                    CodLineaProd = createDto.CodLineaProd ?? ""
                 };
 
                 _context.ArticoliControlloQualita.Add(articolo);
@@ -184,7 +147,7 @@ namespace api.Controllers
             }
         }
 
-        // PUT: api/ControlloQualita/5 (Update by ID)
+        // PUT: api/ControlloQualita/{id} (Update by ID)
         [HttpPut("{id}")]
         public async Task<ActionResult> Update(int id, [FromBody] UpdateArticoloDto updateDto)
         {
@@ -199,30 +162,36 @@ namespace api.Controllers
                     });
                 }
 
-                var articolo = await _context.ArticoliControlloQualita.FindAsync(id);
+                // Find the existing articolo by ID
+                var articolo = await _context.ArticoliControlloQualita
+                    .FirstOrDefaultAsync(a => a.Id == id);
+                    
                 if (articolo == null)
                 {
                     return NotFound(new { 
                         success = false, 
-                        message = $"Articolo with ID {id} not found" 
+                        message = $"Articolo with ID '{id}' not found" 
                     });
                 }
 
-                // Check if the new COD_ARTICOLO already exists (excluding current record)
+                // Check if the new combination of COD_ARTICOLO + COD_LINEA_PROD already exists
+                // (excluding the current record we're updating)
                 var existingArticolo = await _context.ArticoliControlloQualita
-                    .FirstOrDefaultAsync(a => a.CodArticolo == updateDto.CodArticolo && a.Id != id);
+                    .FirstOrDefaultAsync(a => a.CodArticolo == updateDto.CodArticolo && 
+                                            a.CodLineaProd == updateDto.CodLineaProd &&
+                                            a.Id != id); // Exclude current record by ID
                 
                 if (existingArticolo != null)
                 {
                     return BadRequest(new { 
                         success = false, 
-                        message = $"Articolo with code {updateDto.CodArticolo} already exists" 
+                        message = $"The combination of Articolo '{updateDto.CodArticolo}' and Production Line '{updateDto.CodLineaProd}' already exists" 
                     });
                 }
 
                 // Update fields
                 articolo.CodArticolo = updateDto.CodArticolo;
-                articolo.CodLineaProd = updateDto.CodLineaProd;
+                articolo.CodLineaProd = updateDto.CodLineaProd ?? "";
                 articolo.DtAgg = DateTime.Now; // Update timestamp
 
                 await _context.SaveChangesAsync();
@@ -250,18 +219,20 @@ namespace api.Controllers
             }
         }
 
-        // DELETE: api/ArticoliControlloQualita/5 (Delete by ID)
+      // DELETE: api/ControlloQualita/{id} (Delete by ID)
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
             try
             {
-                var articolo = await _context.ArticoliControlloQualita.FindAsync(id);
+                var articolo = await _context.ArticoliControlloQualita
+                    .FirstOrDefaultAsync(a => a.Id == id);
+                    
                 if (articolo == null)
                 {
                     return NotFound(new { 
                         success = false, 
-                        message = $"Articolo with ID {id} not found" 
+                        message = $"Articolo with ID '{id}' not found" 
                     });
                 }
 
@@ -275,39 +246,6 @@ namespace api.Controllers
                 return StatusCode(500, new { 
                     success = false, 
                     message = "Error deleting articolo", 
-                    error = ex.Message 
-                });
-            }
-        }
-
-        // GET: api/ControlloQualita/by-linea/{codLinea}
-        [HttpGet("by-linea/{codLinea}")]
-        public async Task<ActionResult<IEnumerable<ArticoloResponseDto>>> GetByLineaProd(string codLinea)
-        {
-            try
-            {
-                var articoli = await _context.ArticoliControlloQualita
-                    .Where(a => a.CodLineaProd == codLinea)
-                    .OrderBy(a => a.Id)
-                    .Select(a => new ArticoloResponseDto
-                    {
-                        Id = a.Id,
-                        CodArticolo = a.CodArticolo,
-                        DtIns = a.DtIns,
-                        DtAgg = a.DtAgg,
-                        FormattedDtIns = a.DtIns.ToString("yyyy-MM-dd HH:mm:ss"),
-                        FormattedDtAgg = a.DtAgg.ToString("yyyy-MM-dd HH:mm:ss"),
-                        CodLineaProd = a.CodLineaProd
-                    })
-                    .ToListAsync();
-
-                return Ok(articoli);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { 
-                    success = false, 
-                    message = "Error retrieving articoli by linea", 
                     error = ex.Message 
                 });
             }

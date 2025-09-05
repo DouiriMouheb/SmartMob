@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Models
 {
@@ -9,8 +10,9 @@ namespace api.Models
     {
         [Key]
         [Column("ID")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        
+
         [Column("COD_ARTICOLO")]
         [MaxLength(50)]
         [Required]
@@ -24,6 +26,7 @@ namespace api.Models
         
         [Column("COD_LINEA_PROD")]
         [MaxLength(10)]
-        public string? CodLineaProd { get; set; }
+        [Required]
+        public string CodLineaProd { get; set; } = string.Empty;
     }
 }
