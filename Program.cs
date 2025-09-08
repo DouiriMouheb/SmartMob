@@ -1,4 +1,6 @@
 using api.Data;
+using api.Hubs;
+using api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,14 @@ builder.Services.AddSwaggerGen();
 
 // Add Controllers
 builder.Services.AddControllers();
+
+// Add SignalR
+builder.Services.AddSignalR();
+
+// Add our real-time service
+builder.Services.AddSingleton<IAcquisizioniRealtimeService, AcquisizioniRealtimeService>();
+builder.Services.AddHostedService<AcquisizioniRealtimeService>(provider => 
+    (AcquisizioniRealtimeService)provider.GetRequiredService<IAcquisizioniRealtimeService>());
 
 // Add CORS for React frontend and external access
 builder.Services.AddCors(options =>
@@ -40,7 +50,7 @@ builder.Services.AddCors(options =>
             })
               .AllowAnyMethod()
               .AllowAnyHeader()
-              .AllowCredentials();
+              .AllowCredentials(); // Important for SignalR
     });
 });
 
@@ -59,13 +69,21 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Use CORS - Allow all origins for simplicity
-app.UseCors("AllowAll");
+// Use CORS - Allow specific origins with credentials for SignalR
+app.UseCors(builder => builder
+    .WithOrigins("http://localhost:5173", "http://localhost:3000")
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowCredentials()
+);
 
 app.UseHttpsRedirection();
 
 // Map controllers
 app.MapControllers();
+
+// Map SignalR Hub
+app.MapHub<AcquisizioniHub>("/hubs/acquisizioni");
 
 app.Run();
 

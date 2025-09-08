@@ -18,6 +18,7 @@ namespace api.Data
         public DbSet<TipologiaSignificato> TipologieSignificati { get; set; }
         public DbSet<ArticoloControlloQualita> ArticoliControlloQualita { get; set; }
         public DbSet<DispositivoMultimediale> DispositiviMultimediali { get; set; }
+        public DbSet<Acquisizione> Acquisizioni { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
