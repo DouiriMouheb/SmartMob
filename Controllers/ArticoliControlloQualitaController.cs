@@ -109,7 +109,7 @@ namespace api.Controllers
                 {
                     return BadRequest(new { 
                         success = false, 
-                        message = $"The combination of Articolo '{createDto.CodArticolo}' and Production Line '{createDto.CodLineaProd}' already exists" 
+                        message = $"La combinazione di Articolo  '{createDto.CodArticolo}' e linea di produzione '{createDto.CodLineaProd}' already exists" 
                     });
                 }
 
@@ -185,7 +185,7 @@ namespace api.Controllers
                 {
                     return BadRequest(new { 
                         success = false, 
-                        message = $"The combination of Articolo '{updateDto.CodArticolo}' and Production Line '{updateDto.CodLineaProd}' already exists" 
+                        message = $"La combinazione di Articolo  '{updateDto.CodArticolo}' e linea di produzione '{updateDto.CodLineaProd}' already exists" 
                     });
                 }
 
