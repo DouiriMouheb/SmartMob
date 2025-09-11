@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using api.Services;
 using api.Models;
+using api.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace api.Controllers
 {
@@ -9,13 +11,16 @@ namespace api.Controllers
     public class AcquisizioniController : ControllerBase
     {
         private readonly IAcquisizioniRealtimeService _realtimeService;
+        private readonly ApplicationDBContext _context;
         private readonly ILogger<AcquisizioniController> _logger;
 
         public AcquisizioniController(
             IAcquisizioniRealtimeService realtimeService,
+            ApplicationDBContext context,
             ILogger<AcquisizioniController> logger)
         {
             _realtimeService = realtimeService;
+            _context = context;
             _logger = logger;
         }
 
@@ -57,6 +62,27 @@ namespace api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving latest single acquisizione");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Get all ACQUISIZIONI records (no filtering)
+        /// </summary>
+        /// <returns>All acquisizioni records</returns>
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Acquisizione>>> GetAll()
+        {
+            try
+            {
+                var acquisizioni = await _context.Acquisizioni
+                    .OrderByDescending(a => a.ID)
+                    .ToListAsync();
+                return Ok(acquisizioni);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all acquisizioni");
                 return StatusCode(500, "Internal server error");
             }
         }

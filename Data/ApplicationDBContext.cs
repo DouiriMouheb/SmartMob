@@ -19,6 +19,7 @@ namespace api.Data
         public DbSet<ArticoloControlloQualita> ArticoliControlloQualita { get; set; }
         public DbSet<DispositivoMultimediale> DispositiviMultimediali { get; set; }
         public DbSet<Acquisizione> Acquisizioni { get; set; }
+        public DbSet<VAgLineePostazioni> VAgLineePostazioni { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +32,11 @@ namespace api.Data
             modelBuilder.Entity<DispositivoMultimediale>()
                 .HasIndex(d => new { d.CodLineaProd, d.CodPostazione, d.SerialeDispositivo })
                 .IsUnique();
+
+            // Configure the V_AG_LINEE_POSTAZIONI view
+            modelBuilder.Entity<VAgLineePostazioni>()
+                .HasNoKey()
+                .ToView("V_AG_LINEE_POSTAZIONI");
 
             base.OnModelCreating(modelBuilder);
         }
