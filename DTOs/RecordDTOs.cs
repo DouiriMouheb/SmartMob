@@ -16,6 +16,9 @@ namespace api.DTOs
         [MaxLength(10)]
         public string? CodLineaProd { get; set; }
 
+        [MaxLength(10)]
+        public string? CodPostazione { get; set; }
+
         public int? Tipologia { get; set; }
     }
 
@@ -39,6 +42,9 @@ namespace api.DTOs
         [MaxLength(10)]
         public string? CodLineaProd { get; set; }
 
+        [MaxLength(10)]
+        public string? CodPostazione { get; set; }
+
         public int? Tipologia { get; set; }
     }
 
@@ -50,6 +56,7 @@ namespace api.DTOs
         public DateTime DateAdded { get; set; }
         public string FormattedDate { get; set; } = string.Empty;
         public string? CodLineaProd { get; set; }
+        public string? CodPostazione { get; set; }
         public int? Tipologia { get; set; }
     }
 

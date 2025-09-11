@@ -25,6 +25,10 @@ namespace api.Models
         [MaxLength(10)]
         public string? COD_LINEA_PROD { get; set; }
         
+        [Column("COD_POSTAZIONE")]
+        [MaxLength(10)]
+        public string? COD_POSTAZIONE { get; set; }
+        
         [Column("TIPOLOGIA")]
         public int? TIPOLOGIA { get; set; }
     }

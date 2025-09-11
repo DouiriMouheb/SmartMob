@@ -37,6 +37,7 @@ namespace api.Controllers
                         DateAdded = r.DT_AGG,
                         FormattedDate = r.DT_AGG.ToString("yyyy-MM-dd HH:mm:ss"),
                         CodLineaProd = r.COD_LINEA_PROD,
+                        CodPostazione = r.COD_POSTAZIONE,
                         Tipologia = r.TIPOLOGIA
                     })
                     .ToListAsync();
@@ -73,6 +74,7 @@ namespace api.Controllers
                         DateAdded = r.DT_AGG,
                         FormattedDate = r.DT_AGG.ToString("yyyy-MM-dd HH:mm:ss"),
                         CodLineaProd = r.COD_LINEA_PROD,
+                        CodPostazione = r.COD_POSTAZIONE,
                         Tipologia = r.TIPOLOGIA
                     })
                     .FirstOrDefaultAsync();
@@ -121,6 +123,7 @@ namespace api.Controllers
                     VALORE = createDto.Valore,
                     DT_AGG = DateTime.Now,
                     COD_LINEA_PROD = createDto.CodLineaProd,
+                    COD_POSTAZIONE = createDto.CodPostazione,
                     TIPOLOGIA = createDto.Tipologia
                 };
 
@@ -135,6 +138,7 @@ namespace api.Controllers
                     DateAdded = record.DT_AGG,
                     FormattedDate = record.DT_AGG.ToString("yyyy-MM-dd HH:mm:ss"),
                     CodLineaProd = record.COD_LINEA_PROD,
+                    CodPostazione = record.COD_POSTAZIONE,
                     Tipologia = record.TIPOLOGIA
                 };
 
@@ -192,6 +196,7 @@ namespace api.Controllers
                     DateAdded = record.DT_AGG,
                     FormattedDate = record.DT_AGG.ToString("yyyy-MM-dd HH:mm:ss"),
                     CodLineaProd = record.COD_LINEA_PROD,
+                    CodPostazione = record.COD_POSTAZIONE,
                     Tipologia = record.TIPOLOGIA
                 };
 
@@ -239,6 +244,7 @@ namespace api.Controllers
                 record.DESCRIZIONE = updateDto.Descrizione;
                 record.VALORE = updateDto.Valore;
                 record.COD_LINEA_PROD = updateDto.CodLineaProd;
+                record.COD_POSTAZIONE = updateDto.CodPostazione;
                 record.TIPOLOGIA = updateDto.Tipologia;
                 record.DT_AGG = DateTime.Now; // Update timestamp
 
@@ -252,6 +258,7 @@ namespace api.Controllers
                     DateAdded = record.DT_AGG,
                     FormattedDate = record.DT_AGG.ToString("yyyy-MM-dd HH:mm:ss"),
                     CodLineaProd = record.COD_LINEA_PROD,
+                    CodPostazione = record.COD_POSTAZIONE,
                     Tipologia = record.TIPOLOGIA
                 };
 
@@ -327,6 +334,7 @@ namespace api.Controllers
                         DateAdded = r.DT_AGG,
                         FormattedDate = r.DT_AGG.ToString("yyyy-MM-dd HH:mm:ss"),
                         CodLineaProd = r.COD_LINEA_PROD,
+                        CodPostazione = r.COD_POSTAZIONE,
                         Tipologia = r.TIPOLOGIA
                     })
                     .ToListAsync();
@@ -365,6 +373,7 @@ namespace api.Controllers
                         DateAdded = r.DT_AGG,
                         FormattedDate = r.DT_AGG.ToString("yyyy-MM-dd HH:mm:ss"),
                         CodLineaProd = r.COD_LINEA_PROD,
+                        CodPostazione = r.COD_POSTAZIONE,
                         Tipologia = r.TIPOLOGIA
                     })
                     .ToListAsync();
@@ -403,6 +412,7 @@ namespace api.Controllers
                         DateAdded = r.DT_AGG,
                         FormattedDate = r.DT_AGG.ToString("yyyy-MM-dd HH:mm:ss"),
                         CodLineaProd = r.COD_LINEA_PROD,
+                        CodPostazione = r.COD_POSTAZIONE,
                         Tipologia = r.TIPOLOGIA
                     })
                     .ToListAsync();
