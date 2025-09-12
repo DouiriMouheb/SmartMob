@@ -79,6 +79,14 @@ app.UseCors(builder => builder
 
 app.UseHttpsRedirection();
 
+// Configure static files for images
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(
+        Path.Combine(builder.Environment.ContentRootPath, "Public")),
+    RequestPath = "/images"
+});
+
 // Map controllers
 app.MapControllers();
 
