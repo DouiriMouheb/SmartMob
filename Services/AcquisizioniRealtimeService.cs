@@ -16,6 +16,12 @@ namespace api.Services
         Task StopMonitoringAsync();
         Task<IEnumerable<Acquisizione>> GetLatestAcquisizioniAsync();
         Task<Acquisizione?> GetLatestSingleRecordAsync();
+        Task<IEnumerable<Acquisizione>> GetLatestByLineAsync(string codLinea);
+        Task<IEnumerable<Acquisizione>> GetLatestByStationAsync(string codPostazione);
+        Task<IEnumerable<Acquisizione>> GetLatestByLineAndStationAsync(string codLinea, string codPostazione);
+        Task<Acquisizione?> GetLatestSingleByLineAsync(string codLinea);
+        Task<Acquisizione?> GetLatestSingleByStationAsync(string codPostazione);
+        Task<Acquisizione?> GetLatestSingleByLineAndStationAsync(string codLinea, string codPostazione);
     }
 
     public class AcquisizioniRealtimeService : BackgroundService, IAcquisizioniRealtimeService
@@ -122,10 +128,13 @@ namespace api.Services
                 {
                     foreach (var newRecord in newRecords)
                     {
-                        _logger.LogInformation($"🆕 New record detected: ID {newRecord.ID}, Line: {newRecord.COD_LINEA}");
+                        _logger.LogInformation($"🆕 New record detected: ID {newRecord.ID}, Line: {newRecord.COD_LINEA}, Station: {newRecord.COD_POSTAZIONE}");
                         
-                        // Send the new record to all connected clients
+                        // Send to ALL connected clients (original functionality)
                         await _hubContext.Clients.All.SendAsync("NewAcquisizioneAdded", newRecord);
+                        
+                        // Send to specific groups based on filters
+                        await BroadcastToFilteredGroups(newRecord);
                         
                         // Update last known ID
                         _lastKnownId = newRecord.ID;
@@ -139,6 +148,44 @@ namespace api.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error checking for new records");
+            }
+        }
+
+        /// <summary>
+        /// Broadcast new record to filtered groups based on COD_LINEA and COD_POSTAZIONE
+        /// </summary>
+        /// <param name="newRecord">The new acquisition record</param>
+        private async Task BroadcastToFilteredGroups(Acquisizione newRecord)
+        {
+            try
+            {
+                // Send to line-specific group
+                if (!string.IsNullOrEmpty(newRecord.COD_LINEA))
+                {
+                    string lineGroup = $"line_{newRecord.COD_LINEA}";
+                    await _hubContext.Clients.Group(lineGroup).SendAsync("NewAcquisizioneForLine", newRecord);
+                    _logger.LogInformation($"📡 Sent to line group: {lineGroup}");
+                }
+
+                // Send to station-specific group
+                if (!string.IsNullOrEmpty(newRecord.COD_POSTAZIONE))
+                {
+                    string stationGroup = $"station_{newRecord.COD_POSTAZIONE}";
+                    await _hubContext.Clients.Group(stationGroup).SendAsync("NewAcquisizioneForStation", newRecord);
+                    _logger.LogInformation($"📡 Sent to station group: {stationGroup}");
+                }
+
+                // Send to line+station combination group
+                if (!string.IsNullOrEmpty(newRecord.COD_LINEA) && !string.IsNullOrEmpty(newRecord.COD_POSTAZIONE))
+                {
+                    string combinedGroup = $"line_{newRecord.COD_LINEA}_station_{newRecord.COD_POSTAZIONE}";
+                    await _hubContext.Clients.Group(combinedGroup).SendAsync("NewAcquisizioneForLineStation", newRecord);
+                    _logger.LogInformation($"📡 Sent to combined group: {combinedGroup}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error broadcasting to filtered groups");
             }
         }
 
@@ -181,6 +228,136 @@ namespace api.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting latest single acquisizione record");
+                return null;
+            }
+        }
+
+        // Filtered methods implementation
+        public async Task<IEnumerable<Acquisizione>> GetLatestByLineAsync(string codLinea)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                
+                var records = await context.Acquisizioni
+                    .Where(a => a.COD_LINEA == codLinea)
+                    .OrderByDescending(a => a.ID)
+                    .Take(10) // Get latest 10 records for this line
+                    .ToListAsync();
+
+                return records;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting latest acquisizioni for line {codLinea}");
+                return Enumerable.Empty<Acquisizione>();
+            }
+        }
+
+        public async Task<IEnumerable<Acquisizione>> GetLatestByStationAsync(string codPostazione)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                
+                var records = await context.Acquisizioni
+                    .Where(a => a.COD_POSTAZIONE == codPostazione)
+                    .OrderByDescending(a => a.ID)
+                    .Take(10) // Get latest 10 records for this station
+                    .ToListAsync();
+
+                return records;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting latest acquisizioni for station {codPostazione}");
+                return Enumerable.Empty<Acquisizione>();
+            }
+        }
+
+        public async Task<IEnumerable<Acquisizione>> GetLatestByLineAndStationAsync(string codLinea, string codPostazione)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                
+                var records = await context.Acquisizioni
+                    .Where(a => a.COD_LINEA == codLinea && a.COD_POSTAZIONE == codPostazione)
+                    .OrderByDescending(a => a.ID)
+                    .Take(10) // Get latest 10 records for this line+station combination
+                    .ToListAsync();
+
+                return records;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting latest acquisizioni for line {codLinea} and station {codPostazione}");
+                return Enumerable.Empty<Acquisizione>();
+            }
+        }
+
+        public async Task<Acquisizione?> GetLatestSingleByLineAsync(string codLinea)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                
+                var record = await context.Acquisizioni
+                    .Where(a => a.COD_LINEA == codLinea)
+                    .OrderByDescending(a => a.ID)
+                    .FirstOrDefaultAsync();
+
+                return record;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting latest single acquisizione for line {codLinea}");
+                return null;
+            }
+        }
+
+        public async Task<Acquisizione?> GetLatestSingleByStationAsync(string codPostazione)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                
+                var record = await context.Acquisizioni
+                    .Where(a => a.COD_POSTAZIONE == codPostazione)
+                    .OrderByDescending(a => a.ID)
+                    .FirstOrDefaultAsync();
+
+                return record;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting latest single acquisizione for station {codPostazione}");
+                return null;
+            }
+        }
+
+        public async Task<Acquisizione?> GetLatestSingleByLineAndStationAsync(string codLinea, string codPostazione)
+        {
+            try
+            {
+                using var scope = _serviceProvider.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<ApplicationDBContext>();
+                
+                var record = await context.Acquisizioni
+                    .Where(a => a.COD_LINEA == codLinea && a.COD_POSTAZIONE == codPostazione)
+                    .OrderByDescending(a => a.ID)
+                    .FirstOrDefaultAsync();
+
+                return record;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error getting latest single acquisizione for line {codLinea} and station {codPostazione}");
                 return null;
             }
         }

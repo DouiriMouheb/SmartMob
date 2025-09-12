@@ -122,5 +122,141 @@ namespace api.Controllers
                 return StatusCode(500, "Failed to stop monitoring");
             }
         }
+
+        // FILTERED ENDPOINTS
+        
+        /// <summary>
+        /// Get latest records for a specific production line
+        /// </summary>
+        /// <param name="codLinea">Production line code</param>
+        /// <returns>Latest acquisizioni for the specified line</returns>
+        [HttpGet("latest/line/{codLinea}")]
+        public async Task<ActionResult<IEnumerable<Acquisizione>>> GetLatestByLine(string codLinea)
+        {
+            try
+            {
+                var acquisizioni = await _realtimeService.GetLatestByLineAsync(codLinea);
+                return Ok(acquisizioni);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error retrieving latest acquisizioni for line {codLinea}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Get latest records for a specific workstation
+        /// </summary>
+        /// <param name="codPostazione">Workstation code</param>
+        /// <returns>Latest acquisizioni for the specified station</returns>
+        [HttpGet("latest/station/{codPostazione}")]
+        public async Task<ActionResult<IEnumerable<Acquisizione>>> GetLatestByStation(string codPostazione)
+        {
+            try
+            {
+                var acquisizioni = await _realtimeService.GetLatestByStationAsync(codPostazione);
+                return Ok(acquisizioni);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error retrieving latest acquisizioni for station {codPostazione}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Get latest records for a specific line and station combination
+        /// </summary>
+        /// <param name="codLinea">Production line code</param>
+        /// <param name="codPostazione">Workstation code</param>
+        /// <returns>Latest acquisizioni for the specified line and station</returns>
+        [HttpGet("latest/line/{codLinea}/station/{codPostazione}")]
+        public async Task<ActionResult<IEnumerable<Acquisizione>>> GetLatestByLineAndStation(string codLinea, string codPostazione)
+        {
+            try
+            {
+                var acquisizioni = await _realtimeService.GetLatestByLineAndStationAsync(codLinea, codPostazione);
+                return Ok(acquisizioni);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error retrieving latest acquisizioni for line {codLinea} and station {codPostazione}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Get single latest record for a specific production line
+        /// </summary>
+        /// <param name="codLinea">Production line code</param>
+        /// <returns>Latest single acquisizione for the specified line</returns>
+        [HttpGet("latest-single/line/{codLinea}")]
+        public async Task<ActionResult<Acquisizione>> GetLatestSingleByLine(string codLinea)
+        {
+            try
+            {
+                var acquisition = await _realtimeService.GetLatestSingleByLineAsync(codLinea);
+                if (acquisition == null)
+                {
+                    return NotFound($"No records found for line {codLinea}");
+                }
+                return Ok(acquisition);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error retrieving latest single acquisizione for line {codLinea}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Get single latest record for a specific workstation
+        /// </summary>
+        /// <param name="codPostazione">Workstation code</param>
+        /// <returns>Latest single acquisizione for the specified station</returns>
+        [HttpGet("latest-single/station/{codPostazione}")]
+        public async Task<ActionResult<Acquisizione>> GetLatestSingleByStation(string codPostazione)
+        {
+            try
+            {
+                var acquisition = await _realtimeService.GetLatestSingleByStationAsync(codPostazione);
+                if (acquisition == null)
+                {
+                    return NotFound($"No records found for station {codPostazione}");
+                }
+                return Ok(acquisition);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error retrieving latest single acquisizione for station {codPostazione}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        /// <summary>
+        /// Get single latest record for a specific line and station combination
+        /// </summary>
+        /// <param name="codLinea">Production line code</param>
+        /// <param name="codPostazione">Workstation code</param>
+        /// <returns>Latest single acquisizione for the specified line and station</returns>
+        [HttpGet("latest-single/line/{codLinea}/station/{codPostazione}")]
+        public async Task<ActionResult<Acquisizione>> GetLatestSingleByLineAndStation(string codLinea, string codPostazione)
+        {
+            try
+            {
+                var acquisition = await _realtimeService.GetLatestSingleByLineAndStationAsync(codLinea, codPostazione);
+                if (acquisition == null)
+                {
+                    return NotFound($"No records found for line {codLinea} and station {codPostazione}");
+                }
+                return Ok(acquisition);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error retrieving latest single acquisizione for line {codLinea} and station {codPostazione}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
