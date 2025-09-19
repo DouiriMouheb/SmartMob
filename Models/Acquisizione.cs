@@ -13,10 +13,7 @@ namespace api.Models
         public string? COD_POSTAZIONE { get; set; }
         public string? FOTO_SUPERIORE { get; set; }
         public string? FOTO_FRONTALE { get; set; }
-        public string? FOTO_BOX { get; set; }
         public bool? ESITO_CQ_ARTICOLO { get; set; }
-        public decimal? ESITO_CQ_BOX { get; set; }
-        public decimal? CONFIDENZA_CQ_BOX { get; set; }
         public decimal? SCOSTAMENTO_CQ_ARTICOLO { get; set; }
         public string? CODICE_ARTICOLO { get; set; }
         public string? CODICE_ORDINE { get; set; }
